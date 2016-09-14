@@ -108,14 +108,14 @@ namespace AnimatedReorderingTest
             {
                 int newNewRow = GetRow(clickedRow);
                 int[] skippedRows;
-                if (newRow > newNewRow) skippedRows = Enumerable.Range(newNewRow, newRow - newNewRow + 1).ToArray();
-                else skippedRows = Enumerable.Range(newRow, newNewRow - newRow + 1).ToArray();
+                if (newRow > newNewRow) skippedRows = Enumerable.Range(newNewRow, newRow - newNewRow).ToArray();
+                else skippedRows = Enumerable.Range(newRow, newNewRow - newRow).ToArray();
                 foreach (int i in skippedRows)
                 {
-                    Console.Write(i);
                     TableRow tr = GetTableRowFromRow(i);
                     if (tr != null && tr != clickedRow && !tr.IsMoving)
                     {
+                    Console.Write(i);
                         if (!up)
                         {
                             GoToRow(tr, i - 1);
@@ -134,7 +134,18 @@ namespace AnimatedReorderingTest
 
         public int GetRow(TableRow tr)
         {
-            return (int)Math.Round((GetTop(tr) + (rowHeight / 2)) / rowHeight);
+            if (MoveUp)
+            {
+                for (int i = 1; i < rowCount; i++)
+                {
+                    if (GetTop(tr) < i * rowHeight) return i - 1;
+                }
+                return 0;
+            }
+            else
+            {
+                return (int)Math.Round((double)((double)GetTop(tr) + (double)tr.ActualHeight / 2) / (double)rowHeight);
+            }
         }
 
         private TableRow GetTableRowFromRow(int row)
